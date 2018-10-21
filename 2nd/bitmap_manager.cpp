@@ -2,19 +2,19 @@
 
 using namespace std;
 
-/* 
-* @fn 4ビット情報をInt整数値に変換 
+/*
+* @fn 4ビット情報をInt整数値に変換
 * @param b1 最下位ビット
 * @param b2 次のビット
 * @param b3 次のビット
 * @param b4 最上位ビット
 * @return 変換された整数値
-*/  
-int bit2Integer(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4) {  
-    return b1 +  
-            b2 * 256 +  
-            b3 * 256 * 256 +  
-            b4 * 256 * 256 * 256;  
+*/
+int bit2Integer(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4) {
+    return b1 +
+            b2 * 256 +
+            b3 * 256 * 256 +
+            b4 * 256 * 256 * 256;
 }
 
 /**
@@ -115,19 +115,19 @@ void BitmapManager::readImageData() {
  * @param filename ファイルの名前
  */
 void BitmapManager::writeData(string filename){
-    FILE *out = fopen(filename.c_str(), "wb");  
-    
-    if (out == NULL)  
-    cout << "Error: 書き出し先のファイルを開けません。" << endl; 
-    
+    FILE *out = fopen(filename.c_str(), "wb");
+
+    if (out == NULL)
+    cout << "Error: 書き出し先のファイルを開けません。" << endl;
+
     // オリジナルデータをもとにヘッダー書き出し
-    fwrite(fileHeader.origData, sizeof(uint8_t), FILE_HEADER_SIZE, out);  
+    fwrite(fileHeader.origData, sizeof(uint8_t), FILE_HEADER_SIZE, out);
     fwrite(infoHeader.origData, sizeof(uint8_t), INFO_HEADER_SIZE, out);
 
-    // データ書き出し  
-    fwrite(image, sizeof(uint8_t), infoHeader.dataSize, out);  
-    
-    fclose(out); 
+    // データ書き出し
+    fwrite(image, sizeof(uint8_t), infoHeader.dataSize, out);
+
+    fclose(out);
 }
 
 /**
@@ -148,7 +148,7 @@ void BitmapManager::displayHeader() {
  * @param infoHeader 情報ヘッダー
  * @param row 行
  * @param col 列
- * @return 各色の格納されている位置 
+ * @return 各色の格納されている位置
  */
 ColorPosition getColorPosition(InfoHeader infoHeader, int row, int col) {
     // 範囲外かどうかを確認
@@ -188,7 +188,7 @@ int BitmapManager::getWidth() {
  */
 int BitmapManager::getHeight() {
     return infoHeader.height;
-} 
+}
 
 /**
  * @fn 指定されたピクセルの色を取得
