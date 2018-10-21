@@ -54,7 +54,7 @@ int count_max(int *count){
 /**
  * @fn gnuplotを用いてヒストグラムを生成
  */
-void showHistgram(BitmapManager *bmp, int *count) {
+void showHistgram(BitmapManager *bmp, int *count, string img_name) {
     FILE *gp;
     int i;
 
@@ -63,9 +63,11 @@ void showHistgram(BitmapManager *bmp, int *count) {
 
     // gnuplot 起動・設定
     gp = popen("gnuplot -persist", "w");  // パイプを開き、gnuplotの立ち上げ
-    fprintf(gp, "set multiplot\n");  // マルチプロットモード
+    //fprintf(gp, "set multiplot\n");  // マルチプロットモード
+    fprintf(gp, "set terminal png\n");
+    fprintf(gp, "set out \"./histgram/%s_histgram.png\"\n", img_name.c_str());
     fprintf(gp, "set xrange [0:255]\n");  // 範囲の指定 x[0 255]
-    fprintf(gp, "set yrange [0:%d]\n", max + 1000);  // 範囲の指定 y[0 ヒストグラムの最大値+1000]
+    fprintf(gp, "set yrange [0:%d]\n", max + 500);  // 範囲の指定 y[0 ヒストグラムの最大値+1000]
     fprintf(gp, "set xlabel \"Pixel Values\"\n");  // ラベル表示
     fprintf(gp, "set ylabel \"Frequency\"\n");
 
@@ -77,7 +79,7 @@ void showHistgram(BitmapManager *bmp, int *count) {
     fprintf(gp, "e\n");
 
     // gnuplot 終了処理
-    fprintf(gp, "set nomultiplot\n"); // マルチプロットモード終了
+    // fprintf(gp, "set nomultiplot\n"); // マルチプロットモード終了
     fprintf(gp, "exit\n"); // gnuplotの終了
     fflush(gp);
     pclose(gp); // パイプを閉じる
@@ -90,10 +92,10 @@ void applyBinarization(BitmapManager *bmp, int *hist) {
 
     // 判別分析法
     //! しきい値
-    int threshold = 0; 
+    int threshold = 0;
     //! pixelNum1 * pixelNum2 * (ave1 - ave2)^2 の最大値
-    double max = 0.0;  
-  
+    double max = 0.0;
+
     for (int i = 0; i < 256; ++i){
         int pixelNum1 = 0;  //! クラス1の画素数
         int pixelNum2 = 0;  //! クラス2の画素数
@@ -101,29 +103,29 @@ void applyBinarization(BitmapManager *bmp, int *hist) {
         long sum2 = 0;  //! クラス2の平均を出すための合計値
         double ave1 = 0.0;  //! クラス1の平均
         double ave2 = 0.0;  //! クラス2の平均
-        
+
         // iまで クラス1へ格納
         for (int j = 0; j <= i; ++j){
             pixelNum1 += hist[j];
             sum1 += j * hist[j];
         }
-        
+
         // i以降 クラス2へ格納
         for (int j = i + 1; j < 256; ++j){
             pixelNum2 += hist[j];
             sum2 += j * hist[j];
         }
-        
+
         // 平均導出
         if (pixelNum1)
             ave1 = (double)sum1 / pixelNum1;
-        
+
         if (pixelNum2)
             ave2 = (double)sum2 / pixelNum2;
-        
+
         // 分散導出
         double tmp = ((double)pixelNum1 * pixelNum2 * (ave1 - ave2) * (ave1 - ave2));
-        
+
         // 最大値更新
         if (tmp > max){
             max = tmp;
@@ -132,7 +134,7 @@ void applyBinarization(BitmapManager *bmp, int *hist) {
     }
 
     cout << "threshold: " << threshold << endl;
-    
+
     /* tの値を使って2値化 */
     for (int row = 0; row < bmp->getHeight(); row++){
         for (int col = 0; col < bmp->getWidth(); col++){
@@ -172,7 +174,7 @@ int main(int argc, char *argv[]) {
     bmp.writeData(gray_filename);
 
     // ヒストグラム表示
-    showHistgram(&bmp, count);
+    showHistgram(&bmp, count, string(argv[1]));
 
     // 判別分析法の利用
     applyBinarization(&bmp, count);
