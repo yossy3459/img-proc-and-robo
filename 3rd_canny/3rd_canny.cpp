@@ -6,25 +6,45 @@ using namespace std;
 #define PREWITT 0
 #define SOBEL 1
 
-#define T_UPPER 200
-#define T_LOWER 100
+#define T_UPPER 150
+#define T_LOWER 50
 
+/**
+ * 画素値に対する角度を管理するクラス。Arctan周辺の処理で用いる
+ */
 class Angle{
     int width;
     int height;
     int *data;
 
 public:
+    /**
+     * @fn 画像のサイズを保存し、画素に対応する領域を確保する
+     * @param width 画像の幅
+     * @param height 画素の高さ
+     */
     void setSize(int width, int height){
         this->width = width;
         this->height = height;
         data = new int[width * height];
     }
 
+    /**
+     * @fn 画素に対する角度を保存
+     * @param row 画素の行
+     * @param col 画素の列
+     * @param tempData 保存するデータ
+     */
     void setData(int row, int col, int tempData){
         this->data[row * width + col] = tempData;
     }
 
+    /**
+     * @fn 保存されている角度を取り出す
+     * @param row 画素の行
+     * @param col 画素の列
+     * @return 角度値
+     */
     int getData(int row, int col){
         return data[row * width + col];
     }
@@ -255,13 +275,14 @@ void nonMaximumSuppression(BitmapManager* srcSobel, Angle angle, BitmapManager* 
  * @param src 画像
  * @param row 注目画素の行
  * @param col 注目画素の列
- * @param t_upper 上川のエッジしきい値
+ * @param t_upper 上側のエッジしきい値
  * @return エッジとして採用してよいかどうか (t or f)
  */
 bool checkAdoptedEdge(BitmapManager* src, int row, int col, int t_upper) {
     
     for (int innerRow = -1; innerRow <= 1; innerRow++) {
         for (int innerCol = -1; innerCol <= 1; innerCol++) {
+            // 隣接8方向に上側のエッジしきい値を超えるものがあればtrueを返す
             if (src->getColor(row+innerRow, col+innerCol).r >= t_upper)
                 return true;
         }
@@ -270,19 +291,27 @@ bool checkAdoptedEdge(BitmapManager* src, int row, int col, int t_upper) {
     return false;
 }
 
-
+/**
+ * @fn ヒステリシスのしきい値処理
+ * @param src 最大値抑制をした画像
+ * @param dst 出力画像
+ * @param t_upper しきい値(上)
+ * @param t_lower しきい値(下)
+ */
 void hysteresisThreshold(BitmapManager* src, BitmapManager* dst, int t_upper, int t_lower) {
     bool isAdoptedEdge = false;
 
     for (int row = 1; row < src->getHeight()-1; row++) {
         for (int col = 1; col < src->getWidth()-1; col++) {
             // 上側は輪郭として採用
-            if (src->getColor(row, col).r >= t_upper)
+            if (src->getColor(row, col).r >= t_upper) {
                 dst->setColor(row, col, 255, 255, 255);
+            }
 
             // 下側は不採用
-            else if (src->getColor(row, col).r < t_lower)
+            else if (src->getColor(row, col).r < t_lower) {
                 dst->setColor(row, col, 0, 0, 0);
+            }
 
             // 上側と下側の間なら、周囲に採用される (t_upperよりも大きい) 値があれば採用
             else {
@@ -336,15 +365,20 @@ int main(int argc, char *argv[]) {
     angle.setSize(src.getWidth(), src.getHeight());
 
     // 処理
+    // 1. 5x5 ガウシアンフィルタ適用
     imgGauss.copy(src);
     applyGaussianFilter5x5(&src, &imgGauss);
+    // 2. ソーベルフィルタ適用
     imgSobel.copy(imgGauss);
     applySobelFilter(&imgGauss, &imgSobel, angle);
+    // 3. 最大値抑制
     imgSuppression.copy(imgSobel);
     nonMaximumSuppression(&imgSobel, angle, &imgSuppression);
-    dst.copy(src);
+    // 4. ヒステリシスのしきい値適用
+    dst.copy(imgSuppression);
     hysteresisThreshold(&imgSuppression, &dst, T_UPPER, T_LOWER);
 
+    // 中間画像をすべて出力
     imgGauss.writeData(gauss_filename);
     imgSobel.writeData(sobel_filename);
     imgSuppression.writeData(sup_filename);
