@@ -272,7 +272,6 @@ void hysteresisThreshold(BitmapManager* src, BitmapManager* dst, int t_upper=200
 
 
 
-
 void applyCanny(BitmapManager* src, BitmapManager* dst) {
     BitmapManager dstGauss, dstSobel, dstAtan, dstSuppression;
 
