@@ -14,7 +14,7 @@
 ## `ソースコード等` ディレクトリの構成
 ```
 ソースコード等/
-　├ 5th.cpp    `ラベリングの処理`
+　├ 4th.cpp    `ラベリングの処理`
 　├ bitmap_manager.cpp    `bmp画像の読み書きなどを管理するクラス`
 　├ bitmap_manager.hpp    `bitmap_manager用のヘッダ`
 　│
