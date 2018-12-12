@@ -1,4 +1,4 @@
-# 先端画像処理・ロボティクス特論 レポート <br> [ラベリング]
+# 先端画像処理・ロボティクス特論 レポート <br> [膨張・縮小]
 学籍番号: AL15069
 氏名: 小野 義基
 提出日: 2018/12/12
@@ -8,13 +8,13 @@
 - AF15045 佐藤康平
 
 ## 概要
-- ラベリング処理を行うプログラムを作成しました。
+- 膨張・縮小処理を行うプログラムを作成しました。
 - 第1回課題で作成したbitmap処理クラスを再利用して実装しました
 
 ## `ソースコード等` ディレクトリの構成
 ```
 ソースコード等/
-　├ 5th.cpp    `ラベリングの処理`
+　├ 5th.cpp    `膨張・縮小の処理`
 　├ bitmap_manager.cpp    `bmp画像の読み書きなどを管理するクラス`
 　├ bitmap_manager.hpp    `bitmap_manager用のヘッダ`
 　│
@@ -27,7 +27,8 @@
 　├ dst/
 　│　├ hoge_gray.bmp    `グレイスケール画像`
 　│　├ hoge_binarization.bmp    `2値化画像`
-　│　├ hoge_classification.bmp    `ラベリング画像: ラベル化されたブロックに赤枠をつけてあります`
+　│　├ hoge_dilation.bmp    `膨張画像 (3回)`
+　│　├ img_erosion.bmp    `縮小画像 (3回)`
 　│　... img, img2, img3も同様
 　│
 　└ Makefile    `Makeファイル`
@@ -38,33 +39,24 @@
 ### 準備
 
 - `src`フォルダに`bmp`ファイルをおいてください。
+- `5th.cpp`の7行目の `DILATION_MAX`と`EROSION_MAX` の値を変更することで、膨張と縮小の回数を指定できます。
+
+``` c++
+#define DILATION_MAX 3
+#define EROSION_MAX 3
+```
 
 ### コンパイル方法
 ``` sh
 make
-./4th bitmap_filename
+./5th bitmap_filename
 ```
 `bitmap_filename` は `src` ディレクトリに置いた画像の名前です
 
 ex) `hoge`, `img`, `img2`, `img3`
 
 ### 出力
-- `dst/`: 各処理画像
-    ラベリングされた各部分を赤枠で囲った画像を出力しています。
-
-- 標準出力: ラベリングされた図形を含む矩形の頂点情報
-    
-    例: `hoge.bmp`に対する頂点情報は以下の通りです
-    ``` bash
-    ===== Label Information =====
-
-    0 (top, bottom, left, right) = (74, 147, 83, 207)
-    1 (top, bottom, left, right) = (86, 227, 328, 455)
-    2 (top, bottom, left, right) = (256, 438, 71, 217)
-    3 (top, bottom, left, right) = (269, 413, 302, 433)
-
-    ===== Label Information End. =====
-    ```
+- `dst/` -> 各処理画像
 
 ### 注意
 - トップダウン方式のbmpファイルは読み込めません。
@@ -75,11 +67,11 @@ ex) `hoge`, `img`, `img2`, `img3`
 他の画像での例は `ソースコード等` フォルダの中の `dst` フォルダに格納してあります。
 
 
-|元画像|グレースケール画像|
+|元画像|2値画像|
 |:-|:-|
-|![hoge](./src/hoge.bmp)|![hoge_binarization](./dst/hoge_gray.bmp)|
+|![hoge](./src/hoge.bmp)|![hoge_binarization](./dst/hoge_binarization.bmp)|
 <br>
 
-|2値画像|ラベリング画像|
+|膨張画像(3回)|縮小画像(3回)|
 |:-|:-|
-|<img src="./dst/hoge_binarization.bmp">|<img src="./dst/hoge_classification.bmp">|
+|<img src="./dst/hoge_dilation.bmp">|<img src="./dst/hoge_erosion.bmp">|

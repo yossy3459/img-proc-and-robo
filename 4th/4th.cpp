@@ -294,6 +294,7 @@ void displayClassification(BitmapManager *img, Label label) {
         }
     }
 
+    cout << endl << "===== Label Information =====" << endl << endl;
     // 画像に書き込み
     for (auto itr = rect.begin(); itr != rect.end(); ++itr) {
 
@@ -305,12 +306,13 @@ void displayClassification(BitmapManager *img, Label label) {
             img->setColor(row, itr->left-1, 255, 0, 0);
             img->setColor(row, itr->right+1, 255, 0, 0);
         }
-
         for (int col = itr->left-1; col <= itr->right+1; col++){
             img->setColor(itr->top-1, col, 255, 0, 0);
             img->setColor(itr->bottom+1, col, 255, 0, 0);
         }
     }
+
+    cout << endl << "===== Label Information End. =====" << endl << endl;
 }
 
 int main(int argc, char *argv[]) {

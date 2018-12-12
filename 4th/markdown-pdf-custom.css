@@ -1,0 +1,46 @@
+:not(pre):not(.hljs) > code {
+    color: #E91E63; /* Change the old color so it seems less like an error */
+    font-size: inherit;
+}
+
+body {
+    font-size: 16px;
+    line-height: 150%;
+    -webkit-text-size-adjust: 100%;
+}
+
+h1 {
+    padding-bottom: .5em;
+    border-bottom: 4px solid #7ED1E6;
+    font-weight: bold;
+}
+
+h2 { 
+    position: relative; 
+    overflow: hidden; 
+    padding-bottom: .5em; 
+    font-weight: bold;
+    margin-top: 50px;
+}
+h2:before,h2:after { 
+    content: ""; 
+    position: absolute; 
+    bottom: 0;
+}
+h2:before { 
+    border-bottom: 
+    2px solid #7ED1E6; 
+    width: 100%;
+}
+h2:after { 
+    border-bottom: 2px solid #ddd; 
+    width: 100%;
+}
+
+
+h3 {
+    padding: 0.5em;/*文字周りの余白*/
+    background: rgb(210, 246, 255); /*背景色*/
+    border-left: solid 5px #7ED1E6; /*左線（実線 太さ 色)*/
+    margin-top: 25px;
+}
